@@ -8,13 +8,19 @@ dropdb:
 	docker exec -it postgres14 dropdb code_editor
 
 migrateup:
-	migrate -path pkg/database/migrations/ -database "postgresql://aaron:secret@localhost:5432/code_editor?sslmode=disable" -verbose up
+	migrate -path pkg/db/migration/ -database "postgresql://aaron:secret@localhost:5432/code_editor?sslmode=disable" -verbose up
 
 migratedown:
-	migrate -path pkg/database/migrations/ -database "postgresql://aaron:secret@localhost:5432/code_editor?sslmode=disable" -verbose down
+	migrate -path pkg/db/migration/ -database "postgresql://aaron:secret@localhost:5432/code_editor?sslmode=disable" -verbose down
 
+migrate:
+	@read -p "Enter migration name: " name; \
+		migrate create -ext sql -dir pkg/db/migration -seq $$name
 
 sqlc:
 	sqlc generate
+
+test:
+	go test -v -cover ./...
 
 .PHONY: postgres, createdb, dropdb, migrateup, migratedown, sqlc
