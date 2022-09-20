@@ -73,11 +73,10 @@ type loginUserRequest struct {
 }
 
 type loginUserResponse struct {
-	SessionId             uuid.UUID    `json:"session_id"`
-	AccessToken           string       `json:"access_token"`
-	User                  userResponse `json:"user"`
-	AccessTokenExpiresAt  time.Time    `json:"access_token_expires_at"`
-	RefreshTokenExpiresAt time.Time    `json:"refresh_token_expires_at"`
+	SessionId            uuid.UUID    `json:"session_id"`
+	AccessToken          string       `json:"access_token"`
+	User                 userResponse `json:"user"`
+	AccessTokenExpiresAt time.Time    `json:"access_token_expires_at"`
 }
 
 func (server *Server) loginUser(ctx *gin.Context) {
@@ -133,20 +132,21 @@ func (server *Server) loginUser(ctx *gin.Context) {
 	}
 
 	rsp := loginUserResponse{
-		AccessToken:           accessToken,
-		User:                  newUserResponse(user),
-		SessionId:             session.ID,
-		AccessTokenExpiresAt:  accessTokenPayload.ExpiredAt,
-		RefreshTokenExpiresAt: refreshTokenPayload.ExpiredAt,
+		User:                 newUserResponse(user),
+		SessionId:            session.ID,
+		AccessToken:          accessToken,
+		AccessTokenExpiresAt: accessTokenPayload.ExpiredAt,
 	}
+
+	ctx.SetCookie("refresh_token", refreshToken, 60*60*24, "/", "localhost:3000", false, true)
 
 	ctx.JSON(http.StatusOK, rsp)
 }
 
-func (server *Server) deleteUser(ctx *gin.Context) {
+//func (server *Server) deleteUser(ctx *gin.Context) {
 
-}
+//}
 
-func (server *Server) updateUser(ctx *gin.Context) {
+//func (server *Server) updateUser(ctx *gin.Context) {
 
-}
+//}
